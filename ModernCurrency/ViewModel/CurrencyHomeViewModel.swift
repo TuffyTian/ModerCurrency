@@ -84,24 +84,10 @@ final class CurrencyHomeViewModel: ObservableObject {
             .combineLatest(CurrencyFetchManager.instance.$liveRateUpdated)
             .combineLatest(self.reloadSubject)
             .map { data -> [CurrencyHomeItemViewModel] in
-                if data.0.0 == true && data.0.0 == true && data.1 == true {
-                    return self.loadCurrencies()
-                }
-                return []
+                return self.loadCurrencies()
             }
             .map({ (items) -> [CurrencyHomeItemViewModel] in
-                var newCurrencyItems: [CurrencyHomeItemViewModel] = []
-                for key in self.currencyShowingKeys {
-                    let item = items.filter { (item) -> Bool in
-                        item.currency.currencyShort.contains(key)
-                    }.first ?? nil
-                    
-                    guard let newItem = item else {
-                        break
-                    }
-                    newCurrencyItems.append(newItem)
-                }
-                return newCurrencyItems
+                return self.filterWithCurrenyShowingKeys(items: items)
             })
             .receive(on: DispatchQueue.main)
             .replaceError(with: [])
@@ -136,6 +122,11 @@ extension CurrencyHomeViewModel {
         
         let rates = UserDefaults.standard.dictionary(forKey: "rates") ?? [:]
         let currencies = UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
+        if rates.count == 0 || currencies.count == 0 {
+            CurrencyFetchManager.instance.refetchDataSubject.send()
+            return []
+        }
+        
         for (index, currency) in currencies.enumerated() {
             let rateDic = rates.filter { (item) -> Bool in
                 return item.key.contains(currency.key)
@@ -157,6 +148,21 @@ extension CurrencyHomeViewModel {
         }
         
         return currencyItemsShowing
+    }
+    
+    private func filterWithCurrenyShowingKeys(items: [CurrencyHomeItemViewModel]) -> [CurrencyHomeItemViewModel] {
+        var newCurrencyItems: [CurrencyHomeItemViewModel] = []
+        for key in self.currencyShowingKeys {
+            let item = items.filter { (item) -> Bool in
+                item.currency.currencyShort.contains(key)
+            }.first ?? nil
+            
+            guard let newItem = item else {
+                break
+            }
+            newCurrencyItems.append(newItem)
+        }
+        return newCurrencyItems
     }
     
     private func filterWithSearchText(_ text: String) -> Dictionary<String, String> {

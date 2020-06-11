@@ -18,11 +18,19 @@ final class CurrencyFetchManager {
             self.fetchLiveRate()
             self.fetchCurrencyList()
         }
+        
+        refetchDataSubject.sink { () in
+            self.fetchCurrencyList()
+            self.fetchLiveRate()
+        }
+        .store(in: &cancelBag)
     }
     
     private var cancelBag = Set<AnyCancellable>()
     @Published var currenyListUpdated = false
     @Published var liveRateUpdated = false
+    
+    var refetchDataSubject = PassthroughSubject<Void, Never>()
 }
 
 extension CurrencyFetchManager {
@@ -50,7 +58,6 @@ extension CurrencyFetchManager {
     
     private func fetchLiveRate() {
         let request = URLRequest(url: URL(string: Api.Currency.liveRate)!)
-        print("run")
         URLSession.shared
             .dataTaskPublisher(for: request)
             .map { $0.data }
