@@ -69,11 +69,7 @@ final class CurrencyHomeViewModel: ObservableObject {
         self.$currentChangedCurrency
             .sink { (viewModel) in
                 self.currencyShowing.forEach { (item) in
-                    if item.id != viewModel?.id {
-                        item.isSelected = false
-                    } else {
-                        item.isSelected = true
-                    }
+                    item.isSelected = item.id == viewModel?.id
                 }
             }
             .store(in: &cancelBag)
@@ -82,16 +78,22 @@ final class CurrencyHomeViewModel: ObservableObject {
             .combineLatest(CurrencyFetchManager.instance.$liveRateUpdated)
             .combineLatest(self.reloadSubject)
             .map { data -> [CurrencyHomeItemViewModel] in
-                print(data)
                 if data.0.0 == true && data.0.0 == true && data.1 == true {
                     return self.loadCurrencies()
                 }
                 return []
             }
             .map({ (items) -> [CurrencyHomeItemViewModel] in
-                items.filter { (item) -> Bool in
-                    self.currencyShowingKeys.contains(item.currency.currencyShort)
+                var newCurrencyItems: [CurrencyHomeItemViewModel] = []
+                for key in self.currencyShowingKeys {
+                    let item = items.filter { (item) -> Bool in
+                        item.currency.currencyShort.contains(key)
+                    }.first ?? nil
+                    if item != nil {
+                        newCurrencyItems.append(item!)
+                    }
                 }
+                return newCurrencyItems
             })
             .receive(on: DispatchQueue.main)
             .replaceError(with: [])
