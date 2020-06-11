@@ -25,6 +25,13 @@ struct CurrencyHomeItemView: View {
                     .padding(.leading, 10)
             }
         }
+        .padding(.all, 10)
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 15)
+                    .foregroundColor(Color.init(hex: 0xF6F4F8))
+            }
+        )
     }
 }
 
