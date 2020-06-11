@@ -12,18 +12,7 @@ import Combine
 final class CurrencyFetchManager {
     static let instance = CurrencyFetchManager()
     
-    private init() {
-        // fet live rate every 15 minutes.
-        DispatchTimer(timeInterval: 5) { [unowned self] (timer) in
-//            self.currenyListUpdated
-        }
-    }
-    
-    private var cancelBag = Set<AnyCancellable>()
-//    @Published var currenyListUpdated = false
-//    @Published var liveRateUpdated = false
-    
-    var refetchDataSubject = PassthroughSubject<Void, Never>()
+    private init() {}
 }
 
 extension CurrencyFetchManager {
@@ -32,6 +21,7 @@ extension CurrencyFetchManager {
         
         return URLSession.shared
             .dataTaskPublisher(for: request)
+            .retry(1)
             .map { $0.data }
             .tryMap { (data) -> Bool in
                 let jsonData = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
@@ -55,6 +45,7 @@ extension CurrencyFetchManager {
         let request = URLRequest(url: URL(string: Api.Currency.liveRate)!)
         return URLSession.shared
             .dataTaskPublisher(for: request)
+            .retry(1)
             .map { $0.data }
             .tryMap { (data) -> Bool in
                 let jsonData = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
@@ -83,14 +74,5 @@ extension CurrencyFetchManager {
         default:
             return AppError.other(error)
         }
-    }
-    
-    private func DispatchTimer(timeInterval: Double, handler:@escaping (DispatchSourceTimer?)->()) {
-        let timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
-        timer.schedule(deadline: .now(), repeating: timeInterval)
-        timer.setEventHandler {
-            handler(timer)
-        }
-        timer.resume()
     }
 }

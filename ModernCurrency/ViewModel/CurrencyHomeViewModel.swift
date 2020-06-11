@@ -151,7 +151,6 @@ extension CurrencyHomeViewModel {
         let rates = UserDefaults.standard.dictionary(forKey: "rates") ?? [:]
         let currencies = UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
         if rates.count == 0 || currencies.count == 0 {
-            CurrencyFetchManager.instance.refetchDataSubject.send()
             return []
         }
         
