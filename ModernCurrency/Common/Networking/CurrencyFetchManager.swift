@@ -13,8 +13,11 @@ final class CurrencyFetchManager {
     static let instance = CurrencyFetchManager()
     
     private init() {
-        fetchCurrencyList()
-        fetchLiveRate()
+        // fet live rate every 15 minutes.
+        DispatchTimer(timeInterval: 900) { [unowned self] (timer) in
+            self.fetchLiveRate()
+            self.fetchCurrencyList()
+        }
     }
     
     private var cancelBag = Set<AnyCancellable>()
@@ -47,7 +50,7 @@ extension CurrencyFetchManager {
     
     private func fetchLiveRate() {
         let request = URLRequest(url: URL(string: Api.Currency.liveRate)!)
-        
+        print("run")
         URLSession.shared
             .dataTaskPublisher(for: request)
             .map { $0.data }
@@ -70,12 +73,10 @@ extension CurrencyFetchManager {
 
 extension CurrencyFetchManager {
     public func DispatchTimer(timeInterval: Double, handler:@escaping (DispatchSourceTimer?)->()) {
-        let timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.main)
+        let timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
         timer.schedule(deadline: .now(), repeating: timeInterval)
         timer.setEventHandler {
-            DispatchQueue.main.async {
-                handler(timer)
-            }
+            handler(timer)
         }
         timer.resume()
     }
