@@ -12,9 +12,10 @@ import Combine
 final class CurrencyHomeViewModel: ObservableObject {
     
     /// This is a array of currnecy you have selected to show at homepage
-    private var currencyShowingKeys: [String] = ["USD", "CNY", "JPY"]
+    var currencyShowingKeys: [String] = ["USD", "CNY", "JPY"]
     @Published var currencyShowing: [CurrencyHomeItemViewModel] = []
     @Published var currentChangedCurrency: CurrencyHomeItemViewModel?
+    private var reloadSubject: CurrentValueSubject<Bool, Never> = CurrentValueSubject(true)
     
     
     /// This is datasource of the CurrencySelectionView. for conevenient, I just use a dict.
@@ -37,6 +38,8 @@ final class CurrencyHomeViewModel: ObservableObject {
     
     func addNewCurrencyShowing(key: String) {
         self.currencyShowingKeys.append(key)
+        
+        reloadSubject.send(true)
     }
     
     @objc func changeAmount(_ notification: Notification) {
@@ -71,8 +74,10 @@ final class CurrencyHomeViewModel: ObservableObject {
         
         CurrencyFetchManager.instance.$currenyListUpdated
             .combineLatest(CurrencyFetchManager.instance.$liveRateUpdated)
+            .combineLatest(self.reloadSubject)
             .map { data -> [CurrencyHomeItemViewModel] in
-                if data.0 == true && data.1 == true {
+                print(data)
+                if data.0.0 == true && data.0.0 == true && data.1 == true {
                     return self.loadCurrencies()
                 }
                 return []
@@ -106,6 +111,20 @@ final class CurrencyHomeViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.currencyList, on: self)
             .store(in: &cancelBag)
+        
+//        $currencyShowingKeys
+//            .map { _ in
+//                return self.loadCurrencies()
+//            }
+//            .map({ (items) -> [CurrencyHomeItemViewModel] in
+//                items.filter { (item) -> Bool in
+//                    self.currencyShowingKeys.contains(item.currency.currencyShort)
+//                }
+//            })
+//            .receive(on: DispatchQueue.main)
+//            .replaceError(with: [])
+//            .assign(to: \.currencyShowing, on: self)
+//            .store(in: &cancelBag)
     }
 }
 
