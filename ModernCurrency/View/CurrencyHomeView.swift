@@ -9,11 +9,29 @@
 import SwiftUI
 
 struct CurrencyHomeView: View {
+    @State var presentView = false
+    @ObservedObject private var keyboard = KeyboardResponder()
+    
     var body: some View {
-        List {
-            ForEach((1...30), id: \.self) { item in
-                CurrencyHomeItemView(textValue: .constant("120"))
+        NavigationView {
+            List {
+                ForEach((1...30), id: \.self) { item in
+                    CurrencyHomeItemView(textValue: .constant("120"))
+                }
             }
+            .navigationBarTitle("Currency")
+            .navigationBarItems(trailing:
+                Button(action: {
+                    self.presentView.toggle()
+                }) {
+                    Image(systemName: "plus.circle").imageScale(.large)
+                }
+            )
+            .gesture(DragGesture().onChanged({_ in
+                UIApplication.shared.endEditing()
+            }))
+            .padding(.bottom, keyboard.currentHeight)
+            .animation(.easeOut(duration: 0.16))
         }
     }
 }
