@@ -14,11 +14,14 @@ struct CurrencyHomeView: View {
     
     var body: some View {
         NavigationView {
-            List(viewModel.currencyShowing) { item in
-                CurrencyHomeItemView(viewMode: item)
-                    .onTapGesture {
-                        self.viewModel.currentChangedCurrency = item
+            List {
+                ForEach(viewModel.currencyShowing, id: \.currency.currencyShort) { item in
+                    CurrencyHomeItemView(viewMode: item)
+                        .onTapGesture {
+                            self.viewModel.currentChangedCurrency = item
+                    }
                 }
+                .onDelete(perform: removeItems(at:))
             }
             .navigationBarTitle("Currency")
             .navigationBarItems(trailing:
@@ -37,6 +40,11 @@ struct CurrencyHomeView: View {
             .padding(.bottom, keyboard.currentHeight)
             .animation(.easeOut(duration: 0.16))
         }
+    }
+    
+    private func removeItems(at offsets: IndexSet) {
+//        viewModel.currencyList.remove(at: offsets.first)
+        viewModel.removeCurrencyShowing(at: offsets.first!)
     }
 }
 

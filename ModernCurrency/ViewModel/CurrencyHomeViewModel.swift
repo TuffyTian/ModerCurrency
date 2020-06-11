@@ -12,7 +12,7 @@ import Combine
 final class CurrencyHomeViewModel: ObservableObject {
     
     /// This is a array of currnecy you have selected to show at homepage
-    var currencyShowingKeys: [String] = ["USD", "CNY", "JPY"]
+    private var currencyShowingKeys: [String] = ["USD", "CNY", "JPY"]
     @Published var currencyShowing: [CurrencyHomeItemViewModel] = []
     @Published var currentChangedCurrency: CurrencyHomeItemViewModel?
     private var reloadSubject: CurrentValueSubject<Bool, Never> = CurrentValueSubject(true)
@@ -38,6 +38,12 @@ final class CurrencyHomeViewModel: ObservableObject {
     
     func addNewCurrencyShowing(key: String) {
         self.currencyShowingKeys.append(key)
+        
+        reloadSubject.send(true)
+    }
+    
+    func removeCurrencyShowing(at index: Int) {
+        self.currencyShowingKeys.remove(at: index)
         
         reloadSubject.send(true)
     }
@@ -111,20 +117,6 @@ final class CurrencyHomeViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.currencyList, on: self)
             .store(in: &cancelBag)
-        
-//        $currencyShowingKeys
-//            .map { _ in
-//                return self.loadCurrencies()
-//            }
-//            .map({ (items) -> [CurrencyHomeItemViewModel] in
-//                items.filter { (item) -> Bool in
-//                    self.currencyShowingKeys.contains(item.currency.currencyShort)
-//                }
-//            })
-//            .receive(on: DispatchQueue.main)
-//            .replaceError(with: [])
-//            .assign(to: \.currencyShowing, on: self)
-//            .store(in: &cancelBag)
     }
 }
 
