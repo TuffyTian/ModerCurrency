@@ -67,3 +67,16 @@ extension CurrencyFetchManager {
             .store(in: &cancelBag)
     }
 }
+
+extension CurrencyFetchManager {
+    public func DispatchTimer(timeInterval: Double, handler:@escaping (DispatchSourceTimer?)->()) {
+        let timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.main)
+        timer.schedule(deadline: .now(), repeating: timeInterval)
+        timer.setEventHandler {
+            DispatchQueue.main.async {
+                handler(timer)
+            }
+        }
+        timer.resume()
+    }
+}

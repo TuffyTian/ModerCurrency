@@ -9,17 +9,16 @@
 import Foundation
 import Combine
 
-final class CurrencyHomeItemViewModel: ObservableObject, Identifiable {
-    var id: Int
-    var isSelected: Bool = false
+final class CurrencyHomeItemViewModel: ObservableObject {
+    var isSelected: Bool
     
     @Published var currency: Currency
     
     private var cancelBag = Set<AnyCancellable>()
     
-    init(id: Int, currency: Currency) {
-        self.id = id
+    init(currency: Currency, isSelected: Bool) {
         self.currency = currency
+        self.isSelected = isSelected
         
         prepareData()
     }

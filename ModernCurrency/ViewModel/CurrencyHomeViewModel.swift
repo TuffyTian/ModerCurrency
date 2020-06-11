@@ -51,15 +51,21 @@ final class CurrencyHomeViewModel: ObservableObject {
     @objc func changeAmount(_ notification: Notification) {
         DispatchQueue.main.async{ [unowned self] in
             for item in self.currencyShowing {
-                if item.id != self.currentChangedCurrency?.id {
+                if item.currency.currencyShort != self.currentChangedCurrency?.currency.currencyShort {
                     var toUSD: Double = 0.0
                     if self.currentChangedCurrency?.currency.currencyShort == "USD" {
                         toUSD = Double(self.currentChangedCurrency!.currency.amount) ?? 0.0
                     } else {
                         toUSD = (Double(self.currentChangedCurrency!.currency.amount) ?? 0.0) / self.currentChangedCurrency!.currency.rate
                     }
-
-                    item.currency.amount = toUSD == 0.0 ? "" : String(format: "%.2f", (item.currency.rate * toUSD))
+                    
+                    if item.currency.currencyShort == "USD" {
+                        item.currency.amount = String(format: "%.2f", (toUSD))
+                    } else {
+                        item.currency.amount = toUSD == 0.0 ? "" : String(format: "%.2f", (item.currency.rate * toUSD))
+                    }
+                    
+                    print(item.currency.amount + "\(item.currency.currencyShort)")
                 }
             }
         }
@@ -69,7 +75,7 @@ final class CurrencyHomeViewModel: ObservableObject {
         self.$currentChangedCurrency
             .sink { (viewModel) in
                 self.currencyShowing.forEach { (item) in
-                    item.isSelected = item.id == viewModel?.id
+                    item.isSelected = item.currency.currencyShort == viewModel?.currency.currencyShort
                 }
             }
             .store(in: &cancelBag)
@@ -89,9 +95,11 @@ final class CurrencyHomeViewModel: ObservableObject {
                     let item = items.filter { (item) -> Bool in
                         item.currency.currencyShort.contains(key)
                     }.first ?? nil
-                    if item != nil {
-                        newCurrencyItems.append(item!)
+                    
+                    guard let newItem = item else {
+                        break
                     }
+                    newCurrencyItems.append(newItem)
                 }
                 return newCurrencyItems
             })
@@ -139,14 +147,24 @@ extension CurrencyHomeViewModel {
                                         currencyShort: currency.key,
                                         currencyTitle: currency.value)
             
-            currencyItemsShowing.append(CurrencyHomeItemViewModel(id: index, currency: currencyItem))
+            if self.currentChangedCurrency?.currency.currencyShort == currencyItem.currencyShort {
+                let specialViewModel = CurrencyHomeItemViewModel(currency: currencyItem, isSelected: true)
+                currencyItemsShowing.append(specialViewModel)
+                self.currentChangedCurrency = specialViewModel
+            } else {
+                currencyItemsShowing.append(CurrencyHomeItemViewModel(currency: currencyItem, isSelected: false))
+            }
         }
         
         return currencyItemsShowing
     }
     
     private func filterWithSearchText(_ text: String) -> Dictionary<String, String> {
-        let listDic = UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
+        var listDic = UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
+        
+        listDic = listDic.filter({ (item) -> Bool in
+            return !currencyShowingKeys.contains(item.key)
+        })
         
         if text == "" {
             return listDic

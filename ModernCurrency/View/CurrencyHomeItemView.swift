@@ -37,7 +37,6 @@ struct CurrencyHomeItemView: View {
 
 struct CurrencyHomeItemView_Previews: PreviewProvider {
     static var previews: some View {
-        CurrencyHomeItemView(viewMode: CurrencyHomeItemViewModel(id: 0,
-                                                                 currency: Currency(id: 0, rate: 0, amount: "", currencyShort: "", currencyTitle: "")))
+        CurrencyHomeItemView(viewMode: CurrencyHomeItemViewModel(currency: Currency(id: 0, rate: 0, amount: "", currencyShort: "", currencyTitle: ""), isSelected: false))
     }
 }
