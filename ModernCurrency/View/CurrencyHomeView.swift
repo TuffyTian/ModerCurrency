@@ -17,7 +17,7 @@ struct CurrencyHomeView: View {
             List(viewModel.currencyShowing) { item in
                 CurrencyHomeItemView(viewMode: item)
                     .onTapGesture {
-                        
+                        self.viewModel.currentChangedCurrency = item
                 }
             }
             .navigationBarTitle("Currency")

@@ -12,8 +12,9 @@ import Combine
 final class CurrencyHomeViewModel: ObservableObject {
     
     /// This is a array of currnecy you have selected to show at homepage
-    private var currencyShowingKeys: [String] = ["USD", "CNY"]
+    private var currencyShowingKeys: [String] = ["USD", "CNY", "JPY"]
     @Published var currencyShowing: [CurrencyHomeItemViewModel] = []
+    @Published var currentChangedCurrency: CurrencyHomeItemViewModel?
     
     
     /// This is datasource of the CurrencySelectionView. for conevenient, I just use a dict.
@@ -25,13 +26,49 @@ final class CurrencyHomeViewModel: ObservableObject {
     
     init() {
         prepareData()
+        
+        NotificationCenter
+            .default
+            .addObserver(self,
+                     selector: #selector(changeAmount(_:)),
+                     name: NSNotification.Name("AmountChange"),
+                     object: nil)
     }
     
     func addNewCurrencyShowing(key: String) {
         self.currencyShowingKeys.append(key)
     }
     
+    @objc func changeAmount(_ notification: Notification) {
+        DispatchQueue.main.async{ [unowned self] in
+            for item in self.currencyShowing {
+                if item.id != self.currentChangedCurrency?.id {
+                    var toUSD: Double = 0.0
+                    if self.currentChangedCurrency?.currency.currencyShort == "USD" {
+                        toUSD = Double(self.currentChangedCurrency!.currency.amount) ?? 0.0
+                    } else {
+                        toUSD = (Double(self.currentChangedCurrency!.currency.amount) ?? 0.0) / self.currentChangedCurrency!.currency.rate
+                    }
+
+                    item.currency.amount = toUSD == 0.0 ? "" : String(format: "%.2f", (item.currency.rate * toUSD))
+                }
+            }
+        }
+    }
+    
     private func prepareData() {
+        self.$currentChangedCurrency
+            .sink { (viewModel) in
+                self.currencyShowing.forEach { (item) in
+                    if item.id != viewModel?.id {
+                        item.isSelected = false
+                    } else {
+                        item.isSelected = true
+                    }
+                }
+            }
+            .store(in: &cancelBag)
+        
         CurrencyFetchManager.instance.$currenyListUpdated
             .combineLatest(CurrencyFetchManager.instance.$liveRateUpdated)
             .map { data -> [CurrencyHomeItemViewModel] in
