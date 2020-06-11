@@ -10,19 +10,5 @@ import Foundation
 
 enum AppError: Error {
     case responseError(error: URLError)
-    case parseError
     case other(Error)
-}
-
-extension AppError {
-    var description: String {
-        switch self {
-        case .parseError:
-            return "can't parese data."
-        case .responseError(let error):
-            return error.localizedDescription
-        case .other(_):
-            return "unkonwn error."
-        }
-    }
 }

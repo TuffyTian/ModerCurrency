@@ -14,33 +14,25 @@ final class CurrencyFetchManager {
     
     private init() {
         // fet live rate every 15 minutes.
-        DispatchTimer(timeInterval: 900) { [unowned self] (timer) in
-            self.fetchLiveRate()
-            self.fetchCurrencyList()
+        DispatchTimer(timeInterval: 5) { [unowned self] (timer) in
+//            self.currenyListUpdated
         }
     }
     
     private var cancelBag = Set<AnyCancellable>()
-    @Published var currenyListUpdated = false
-    @Published var liveRateUpdated = false
+//    @Published var currenyListUpdated = false
+//    @Published var liveRateUpdated = false
     
     var refetchDataSubject = PassthroughSubject<Void, Never>()
 }
 
 extension CurrencyFetchManager {
-    private func fetchCurrencyList() {
+    var currenyListUpdated: AnyPublisher<Bool, AppError> {
         let request = URLRequest(url: URL(string: Api.Currency.currencyList)!)
         
-        URLSession.shared
+        return URLSession.shared
             .dataTaskPublisher(for: request)
             .map { $0.data }
-            .mapError({ (error) -> Error in
-                switch error {
-                case let urlError:
-                    print("handle error")
-                    return AppError.responseError(error: urlError)
-                }
-            })
             .tryMap { (data) -> Bool in
                 let jsonData = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
                 guard let json = jsonData else {
@@ -49,26 +41,21 @@ extension CurrencyFetchManager {
                 // For convenient I use UserDefaults, Actually it is not a good way to store network data.
                 // Data of curreny is not big. So just chose UserDefaults.
                 let jsonDic = json as? Dictionary<String, Any> ?? [:]
+                print("run")
                 UserDefaults.standard.set(jsonDic["currencies"] ?? [], forKey: "currency")
                 return true
             }
-            .replaceError(with: false)
-            .assign(to: \.currenyListUpdated, on: self)
-            .store(in: &cancelBag)
+            .mapError({ (error) -> AppError in
+                self.handleError(error: error)
+            })
+            .eraseToAnyPublisher()
     }
     
-    private func fetchLiveRate() {
+    var liveRateUpdated: AnyPublisher<Bool, AppError> {
         let request = URLRequest(url: URL(string: Api.Currency.liveRate)!)
-        URLSession.shared
+        return URLSession.shared
             .dataTaskPublisher(for: request)
             .map { $0.data }
-            .mapError({ (error) -> Error in
-                switch error {
-                case let urlError:
-                    print("handle error")
-                    return AppError.responseError(error: urlError)
-                }
-            })
             .tryMap { (data) -> Bool in
                 let jsonData = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
                 guard let json = jsonData else {
@@ -80,14 +67,25 @@ extension CurrencyFetchManager {
                 UserDefaults.standard.set(jsonDic["quotes"] ?? [], forKey: "rates")
                 return true
             }
-            .replaceError(with: false)
-            .assign(to: \.liveRateUpdated, on: self)
-            .store(in: &cancelBag)
+            .mapError({ (error) -> AppError in
+                self.handleError(error: error)
+            })
+            .eraseToAnyPublisher()
     }
 }
 
 extension CurrencyFetchManager {
-    public func DispatchTimer(timeInterval: Double, handler:@escaping (DispatchSourceTimer?)->()) {
+    private func handleError(error: Error) -> AppError {
+        switch error {
+        case let urlError as URLError:
+            print("handle error")
+            return AppError.responseError(error: urlError)
+        default:
+            return AppError.other(error)
+        }
+    }
+    
+    private func DispatchTimer(timeInterval: Double, handler:@escaping (DispatchSourceTimer?)->()) {
         let timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
         timer.schedule(deadline: .now(), repeating: timeInterval)
         timer.setEventHandler {

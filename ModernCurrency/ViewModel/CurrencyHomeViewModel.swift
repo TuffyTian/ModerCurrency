@@ -16,7 +16,7 @@ final class CurrencyHomeViewModel: ObservableObject {
     @Published var currencyShowing: [CurrencyHomeItemViewModel] = []
     @Published var currentChangedCurrency: CurrencyHomeItemViewModel?
     private var reloadSubject: CurrentValueSubject<Bool, Never> = CurrentValueSubject(true)
-    
+    private var refetchDataSubject = PassthroughSubject<Void, Never>()
     
     /// This is datasource of the CurrencySelectionView. for conevenient, I just use a dict.
     @Published var currencyList: Dictionary<String, String> = [:]
@@ -34,6 +34,10 @@ final class CurrencyHomeViewModel: ObservableObject {
                      selector: #selector(changeAmount(_:)),
                      name: NSNotification.Name(amountChangeNotificationName),
                      object: nil)
+        
+        DispatchTimer(timeInterval: 900) { (timer) in
+            self.refetchDataSubject.send()
+        }
     }
     
     func addNewCurrencyShowing(key: String) {
@@ -80,26 +84,50 @@ final class CurrencyHomeViewModel: ObservableObject {
             }
             .store(in: &cancelBag)
         
-        CurrencyFetchManager.instance.$currenyListUpdated
-            .combineLatest(CurrencyFetchManager.instance.$liveRateUpdated)
-            .combineLatest(self.reloadSubject)
+        self.refetchDataSubject
+            .flatMap {
+                return CurrencyFetchManager.instance.currenyListUpdated
+                    .combineLatest(CurrencyFetchManager.instance.liveRateUpdated)
+                .replaceError(with: (false, false))
+                .eraseToAnyPublisher()
+            }
+            .map { (result) -> Bool in
+                if result.0 == true && result.1 == true {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.reloadSubject.value, on: self)
+            .store(in: &cancelBag)
+        
+        self.reloadSubject
+            .filter { $0 == true }
             .map { data -> [CurrencyHomeItemViewModel] in
                 return self.loadCurrencies()
             }
             .map({ (items) -> [CurrencyHomeItemViewModel] in
+                print(items.count)
                 return self.filterWithCurrenyShowingKeys(items: items)
             })
             .receive(on: DispatchQueue.main)
             .replaceError(with: [])
             .assign(to: \.currencyShowing, on: self)
             .store(in: &cancelBag)
-        
-        CurrencyFetchManager.instance.$currenyListUpdated
+            
+        self.reloadSubject
+            .filter { $0 == true }
             .map { data -> Dictionary<String, String> in
                 if data == true {
                     return UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
                 }
                 return [:]
+            }
+            .map { items in
+                return items.filter({ (item) -> Bool in
+                    return !self.currencyShowingKeys.contains(item.key)
+                })
             }
             .receive(on: DispatchQueue.main)
             .replaceError(with: [:])
@@ -178,5 +206,16 @@ extension CurrencyHomeViewModel {
         return listDic.filter { (item) -> Bool in
             return item.key.lowercased().contains(text.lowercased()) || item.value.lowercased().contains(text.lowercased())
         }
+    }
+}
+
+extension CurrencyHomeViewModel {
+    private func DispatchTimer(timeInterval: Double, handler:@escaping (DispatchSourceTimer?)->()) {
+        let timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
+        timer.schedule(deadline: .now(), repeating: timeInterval)
+        timer.setEventHandler {
+            handler(timer)
+        }
+        timer.resume()
     }
 }

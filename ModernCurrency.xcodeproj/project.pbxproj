@@ -26,6 +26,7 @@
 		7B0E0111249205C8000DCC82 /* CurrencyFetchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E0110249205C8000DCC82 /* CurrencyFetchManager.swift */; };
 		7B0E011324921A16000DCC82 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E011224921A16000DCC82 /* Currency.swift */; };
 		7B7B01B424924F1900252FAF /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7B01B324924F1900252FAF /* AppError.swift */; };
+		7B7B01B624925B4300252FAF /* CurrencyHomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7B01B524925B4300252FAF /* CurrencyHomeViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		7B0E0110249205C8000DCC82 /* CurrencyFetchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFetchManager.swift; sourceTree = "<group>"; };
 		7B0E011224921A16000DCC82 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		7B7B01B324924F1900252FAF /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		7B7B01B524925B4300252FAF /* CurrencyHomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyHomeViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 		7B0E00DC2491D0BF000DCC82 /* ModernCurrencyTests */ = {
 			isa = PBXGroup;
 			children = (
+				7B7B01B524925B4300252FAF /* CurrencyHomeViewModelTests.swift */,
 				7B0E00DD2491D0BF000DCC82 /* ModernCurrencyTests.swift */,
 				7B0E00DF2491D0BF000DCC82 /* Info.plist */,
 			);
@@ -385,6 +388,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B7B01B624925B4300252FAF /* CurrencyHomeViewModelTests.swift in Sources */,
 				7B0E00DE2491D0BF000DCC82 /* ModernCurrencyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
