@@ -16,6 +16,7 @@ final class CurrencyHomeViewModel: ObservableObject {
     
     /// This is datasource of the CurrencySelectionView. for conevenient, I just use a dict.
     @Published var currencyList: Dictionary<String, String> = [:]
+    @Published var searchText: String = ""
     
     private var cancelBag = Set<AnyCancellable>()
     
@@ -45,6 +46,18 @@ final class CurrencyHomeViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .replaceError(with: [])
             .assign(to: \.currencyShowing, on: self)
+            .store(in: &cancelBag)
+        
+        CurrencyFetchManager.instance.$currenyListUpdated
+            .map { data -> Dictionary<String, String> in
+                if data == true {
+                    return UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
+                }
+                return [:]
+            }
+            .receive(on: DispatchQueue.main)
+            .replaceError(with: [:])
+            .assign(to: \.currencyList, on: self)
             .store(in: &cancelBag)
     }
 }

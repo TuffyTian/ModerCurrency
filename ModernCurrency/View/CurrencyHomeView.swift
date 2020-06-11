@@ -29,7 +29,7 @@ struct CurrencyHomeView: View {
                 }
             )
             .sheet(isPresented: $presentView) {
-                CurrencySelectionView(searchText: .constant(""))
+                CurrencySelectionView(viewModel: self.viewModel)
             }
             .gesture(DragGesture().onChanged({_ in
                 UIApplication.shared.endEditing()

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct CurrencySelectionView: View {
-    @Binding var searchText: String
+    @ObservedObject var viewModel: CurrencyHomeViewModel
     
     var body: some View {
            VStack {
@@ -17,16 +17,17 @@ struct CurrencySelectionView: View {
                    HStack {
                        Image(systemName: "magnifyingglass")
 
-                       TextField("search", text: $searchText, onCommit: {
-                           UIApplication.shared.endEditing()
+                       TextField("search", text: $viewModel.searchText, onCommit: {
+                        UIApplication.shared.endEditing()
+                        
                        })
                         .foregroundColor(.primary)
 
                        Button(action: {
-                           self.searchText = ""
+                        self.viewModel.searchText = ""
                        }) {
                         Image(systemName: "xmark.circle.fill")
-                            .opacity(self.searchText == "" ? 0 : 1)
+                            .opacity(viewModel.searchText == "" ? 0 : 1)
                        }
                    }
                    .padding(EdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 6))
@@ -36,14 +37,19 @@ struct CurrencySelectionView: View {
                }
                .padding()
     
-               List {
-                ForEach((1...30), id: \.self) { item in
-                       HStack {
-                        Text(String(item))
-                       }
-                       .padding(.all, 10)
-                   }
-               }
+                List {
+                    ForEach(viewModel.currencyList
+                        .map({ $0.key })
+                        .sorted(), id: \.self) { key in
+                        HStack {
+                            Text(key)
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text(self.viewModel.currencyList[key] ?? "")
+                        }
+                        .padding(.all, 10)
+                    }
+                }
                .gesture(DragGesture().onChanged({_ in
                    UIApplication.shared.endEditing()
                }))
@@ -53,6 +59,6 @@ struct CurrencySelectionView: View {
 
 struct CurrencySelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        CurrencySelectionView(searchText: .constant("1"))
+        CurrencySelectionView(viewModel: CurrencyHomeViewModel())
     }
 }
