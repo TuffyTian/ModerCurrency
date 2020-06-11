@@ -17,11 +17,16 @@ final class CurrencyHomeViewModel: ObservableObject {
     /// This is datasource of the CurrencySelectionView. for conevenient, I just use a dict.
     @Published var currencyList: Dictionary<String, String> = [:]
     @Published var searchText: String = ""
+    @Published var presentView = false
     
     private var cancelBag = Set<AnyCancellable>()
     
     init() {
         prepareData()
+    }
+    
+    func addNewCurrencyShowing(key: String) {
+        print(key)
     }
     
     private func prepareData() {
@@ -59,5 +64,26 @@ final class CurrencyHomeViewModel: ObservableObject {
             .replaceError(with: [:])
             .assign(to: \.currencyList, on: self)
             .store(in: &cancelBag)
+        
+        $searchText
+            .debounce(for: 0.1, scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .map { self.filterWithSearchText($0)}
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.currencyList, on: self)
+            .store(in: &cancelBag)
+    }
+}
+
+extension CurrencyHomeViewModel {
+    private func filterWithSearchText(_ text: String) -> Dictionary<String, String> {
+        let listDic = UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
+        
+        if text == "" {
+            return listDic
+        }
+        return listDic.filter { (item) -> Bool in
+            return item.key.lowercased().contains(text.lowercased()) || item.value.lowercased().contains(text.lowercased())
+        }
     }
 }

@@ -44,10 +44,15 @@ struct CurrencySelectionView: View {
                         HStack {
                             Text(key)
                                 .fontWeight(.bold)
-                            Spacer()
                             Text(self.viewModel.currencyList[key] ?? "")
                         }
+                        .frame(height: 30)
                         .padding(.all, 10)
+                        .onTapGesture {
+                            self.viewModel.addNewCurrencyShowing(key: key)
+                            self.viewModel.presentView = false
+                        }
+                        
                     }
                 }
                .gesture(DragGesture().onChanged({_ in

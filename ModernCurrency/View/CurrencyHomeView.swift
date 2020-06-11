@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct CurrencyHomeView: View {
-    @State var presentView = false
     @ObservedObject private var keyboard = KeyboardResponder()
     @ObservedObject var viewModel: CurrencyHomeViewModel
     
@@ -23,12 +22,12 @@ struct CurrencyHomeView: View {
             .navigationBarTitle("Currency")
             .navigationBarItems(trailing:
                 Button(action: {
-                    self.presentView.toggle()
+                    self.viewModel.presentView.toggle()
                 }) {
                     Image(systemName: "plus.circle").imageScale(.large)
                 }
             )
-            .sheet(isPresented: $presentView) {
+            .sheet(isPresented: $viewModel.presentView) {
                 CurrencySelectionView(viewModel: self.viewModel)
             }
             .gesture(DragGesture().onChanged({_ in
