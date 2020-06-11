@@ -11,6 +11,7 @@ import SwiftUI
 struct CurrencyHomeView: View {
     @State var presentView = false
     @ObservedObject private var keyboard = KeyboardResponder()
+    @ObservedObject var viewModel: CurrencyHomeViewModel
     
     var body: some View {
         NavigationView {
@@ -41,6 +42,6 @@ struct CurrencyHomeView: View {
 
 struct CurrencyHomeView_Previews: PreviewProvider {
     static var previews: some View {
-        CurrencyHomeView()
+        CurrencyHomeView(viewModel: CurrencyHomeViewModel())
     }
 }
