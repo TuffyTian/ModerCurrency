@@ -32,7 +32,7 @@ final class CurrencyHomeViewModel: ObservableObject {
             .default
             .addObserver(self,
                      selector: #selector(changeAmount(_:)),
-                     name: NSNotification.Name("AmountChange"),
+                     name: NSNotification.Name(amountChangeNotificationName),
                      object: nil)
     }
     
@@ -60,7 +60,7 @@ final class CurrencyHomeViewModel: ObservableObject {
                     }
                     
                     if item.currency.currencyShort == "USD" {
-                        item.currency.amount = String(format: "%.2f", (toUSD))
+                        item.currency.amount = toUSD == 0.0 ? "" : String(format: "%.2f", (toUSD))
                     } else {
                         item.currency.amount = toUSD == 0.0 ? "" : String(format: "%.2f", (item.currency.rate * toUSD))
                     }

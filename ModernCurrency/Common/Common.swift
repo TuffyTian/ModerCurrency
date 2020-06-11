@@ -33,3 +33,4 @@ extension UIApplication {
     }
 }
 
+let amountChangeNotificationName = "AmountChange"

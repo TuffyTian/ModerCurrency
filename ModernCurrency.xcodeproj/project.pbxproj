@@ -25,6 +25,7 @@
 		7B0E010F2492027E000DCC82 /* Api.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E010E2492027E000DCC82 /* Api.swift */; };
 		7B0E0111249205C8000DCC82 /* CurrencyFetchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E0110249205C8000DCC82 /* CurrencyFetchManager.swift */; };
 		7B0E011324921A16000DCC82 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E011224921A16000DCC82 /* Currency.swift */; };
+		7B7B01B424924F1900252FAF /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7B01B324924F1900252FAF /* AppError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 		7B0E010E2492027E000DCC82 /* Api.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Api.swift; sourceTree = "<group>"; };
 		7B0E0110249205C8000DCC82 /* CurrencyFetchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFetchManager.swift; sourceTree = "<group>"; };
 		7B0E011224921A16000DCC82 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
+		7B7B01B324924F1900252FAF /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +204,7 @@
 			isa = PBXGroup;
 			children = (
 				7B0E0110249205C8000DCC82 /* CurrencyFetchManager.swift */,
+				7B7B01B324924F1900252FAF /* AppError.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -367,6 +370,7 @@
 				7B0E00C92491D0BD000DCC82 /* SceneDelegate.swift in Sources */,
 				7B0E00CB2491D0BD000DCC82 /* ContentView.swift in Sources */,
 				7B0E0111249205C8000DCC82 /* CurrencyFetchManager.swift in Sources */,
+				7B7B01B424924F1900252FAF /* AppError.swift in Sources */,
 				7B0E010F2492027E000DCC82 /* Api.swift in Sources */,
 				7B0E00FC2491D1E8000DCC82 /* CurrencyHomeItemView.swift in Sources */,
 				7B0E011324921A16000DCC82 /* Currency.swift in Sources */,

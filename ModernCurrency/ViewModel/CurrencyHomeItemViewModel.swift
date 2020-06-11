@@ -29,7 +29,7 @@ final class CurrencyHomeItemViewModel: ObservableObject {
                 if self.isSelected {
                     NotificationCenter
                         .default
-                        .post(name: NSNotification.Name("AmountChange"),
+                        .post(name: NSNotification.Name(amountChangeNotificationName),
                               object: value,
                               userInfo: ["amount": self.currency.amount])
                 }

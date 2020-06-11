@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import Combine
 @testable import ModernCurrency
 
 class ModernCurrencyTests: XCTestCase {

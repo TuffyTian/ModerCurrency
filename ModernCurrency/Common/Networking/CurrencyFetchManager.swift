@@ -18,12 +18,6 @@ final class CurrencyFetchManager {
             self.fetchLiveRate()
             self.fetchCurrencyList()
         }
-        
-        refetchDataSubject.sink { () in
-            self.fetchCurrencyList()
-            self.fetchLiveRate()
-        }
-        .store(in: &cancelBag)
     }
     
     private var cancelBag = Set<AnyCancellable>()
@@ -40,6 +34,13 @@ extension CurrencyFetchManager {
         URLSession.shared
             .dataTaskPublisher(for: request)
             .map { $0.data }
+            .mapError({ (error) -> Error in
+                switch error {
+                case let urlError:
+                    print("handle error")
+                    return AppError.responseError(error: urlError)
+                }
+            })
             .tryMap { (data) -> Bool in
                 let jsonData = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
                 guard let json = jsonData else {
@@ -61,6 +62,13 @@ extension CurrencyFetchManager {
         URLSession.shared
             .dataTaskPublisher(for: request)
             .map { $0.data }
+            .mapError({ (error) -> Error in
+                switch error {
+                case let urlError:
+                    print("handle error")
+                    return AppError.responseError(error: urlError)
+                }
+            })
             .tryMap { (data) -> Bool in
                 let jsonData = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
                 guard let json = jsonData else {
