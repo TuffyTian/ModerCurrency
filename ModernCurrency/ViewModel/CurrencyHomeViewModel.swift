@@ -15,7 +15,7 @@ final class CurrencyHomeViewModel: ObservableObject {
     private var currencyShowingKeys: [String] = ["USD", "CNY", "JPY"]
     @Published var currencyShowing: [CurrencyHomeItemViewModel] = []
     @Published var currentChangedCurrency: CurrencyHomeItemViewModel?
-    private var reloadSubject: CurrentValueSubject<Bool, Never> = CurrentValueSubject(true)
+    private var reloadDataSubject: CurrentValueSubject<Bool, Never> = CurrentValueSubject(true)
     private var refetchDataSubject = PassthroughSubject<Void, Never>()
     
     /// This is datasource of the CurrencySelectionView. for conevenient, I just use a dict.
@@ -43,13 +43,13 @@ final class CurrencyHomeViewModel: ObservableObject {
     func addNewCurrencyShowing(key: String) {
         self.currencyShowingKeys.append(key)
         
-        reloadSubject.send(true)
+        reloadDataSubject.send(true)
     }
     
     func removeCurrencyShowing(at index: Int) {
         self.currencyShowingKeys.remove(at: index)
         
-        reloadSubject.send(true)
+        reloadDataSubject.send(true)
     }
     
     @objc func changeAmount(_ notification: Notification) {
@@ -99,10 +99,10 @@ final class CurrencyHomeViewModel: ObservableObject {
                 }
             }
             .receive(on: DispatchQueue.main)
-            .assign(to: \.reloadSubject.value, on: self)
+            .assign(to: \.reloadDataSubject.value, on: self)
             .store(in: &cancelBag)
         
-        self.reloadSubject
+        self.reloadDataSubject
             .filter { $0 == true }
             .map { data -> [CurrencyHomeItemViewModel] in
                 return self.loadCurrencies()
@@ -116,7 +116,7 @@ final class CurrencyHomeViewModel: ObservableObject {
             .assign(to: \.currencyShowing, on: self)
             .store(in: &cancelBag)
             
-        self.reloadSubject
+        self.reloadDataSubject
             .filter { $0 == true }
             .map { data -> Dictionary<String, String> in
                 if data == true {
