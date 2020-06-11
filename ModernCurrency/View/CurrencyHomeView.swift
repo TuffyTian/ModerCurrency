@@ -27,6 +27,9 @@ struct CurrencyHomeView: View {
                     Image(systemName: "plus.circle").imageScale(.large)
                 }
             )
+            .sheet(isPresented: $presentView) {
+                CurrencySelectionView(searchText: .constant(""))
+            }
             .gesture(DragGesture().onChanged({_ in
                 UIApplication.shared.endEditing()
             }))
