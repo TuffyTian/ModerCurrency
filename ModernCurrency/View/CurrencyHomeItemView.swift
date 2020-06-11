@@ -9,18 +9,18 @@
 import SwiftUI
 
 struct CurrencyHomeItemView: View {
-    @Binding var textValue: String
+    @ObservedObject var viewMode: CurrencyHomeItemViewModel
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Amercian USD")
+            Text(viewMode.currency.currencyTitle)
                 .font(.system(size: 12))
                 .foregroundColor(.gray)
             HStack {
-                Text("USD")
+                Text(viewMode.currency.currencyShort)
                     .font(.system(size: 20))
                 Spacer()
-                TextField("0", text: $textValue)
+                TextField("0", text: $viewMode.currency.amount)
                     .font(.system(size: 20))
                     .padding(.leading, 10)
             }
@@ -37,6 +37,7 @@ struct CurrencyHomeItemView: View {
 
 struct CurrencyHomeItemView_Previews: PreviewProvider {
     static var previews: some View {
-        CurrencyHomeItemView(textValue: .constant("123"))
+        CurrencyHomeItemView(viewMode: CurrencyHomeItemViewModel(id: 0,
+                                                                 currency: Currency(id: 0, rate: 0, amount: "", currencyShort: "", currencyTitle: "")))
     }
 }

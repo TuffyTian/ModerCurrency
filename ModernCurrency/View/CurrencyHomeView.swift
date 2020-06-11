@@ -14,9 +14,10 @@ struct CurrencyHomeView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach((1...30), id: \.self) { item in
-                    CurrencyHomeItemView(textValue: .constant("120"))
+            List(viewModel.currencyShowing) { item in
+                CurrencyHomeItemView(viewMode: item)
+                    .onTapGesture {
+                        
                 }
             }
             .navigationBarTitle("Currency")

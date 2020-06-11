@@ -24,6 +24,7 @@
 		7B0E010D2491E19E000DCC82 /* CurrencySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E010C2491E19E000DCC82 /* CurrencySelectionView.swift */; };
 		7B0E010F2492027E000DCC82 /* Api.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E010E2492027E000DCC82 /* Api.swift */; };
 		7B0E0111249205C8000DCC82 /* CurrencyFetchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E0110249205C8000DCC82 /* CurrencyFetchManager.swift */; };
+		7B0E011324921A16000DCC82 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0E011224921A16000DCC82 /* Currency.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		7B0E010C2491E19E000DCC82 /* CurrencySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectionView.swift; sourceTree = "<group>"; };
 		7B0E010E2492027E000DCC82 /* Api.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Api.swift; sourceTree = "<group>"; };
 		7B0E0110249205C8000DCC82 /* CurrencyFetchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFetchManager.swift; sourceTree = "<group>"; };
+		7B0E011224921A16000DCC82 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -215,6 +217,7 @@
 		7B0E01082491DE14000DCC82 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				7B0E011224921A16000DCC82 /* Currency.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -366,6 +369,7 @@
 				7B0E0111249205C8000DCC82 /* CurrencyFetchManager.swift in Sources */,
 				7B0E010F2492027E000DCC82 /* Api.swift in Sources */,
 				7B0E00FC2491D1E8000DCC82 /* CurrencyHomeItemView.swift in Sources */,
+				7B0E011324921A16000DCC82 /* Currency.swift in Sources */,
 				7B0E010D2491E19E000DCC82 /* CurrencySelectionView.swift in Sources */,
 				7B0E01022491DDB1000DCC82 /* CurrencyHomeViewModel.swift in Sources */,
 				7B0E01002491D320000DCC82 /* Common.swift in Sources */,
