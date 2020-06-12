@@ -20,7 +20,7 @@ struct CurrencyHomeItemView: View {
                 Text(viewMode.currency.currencyShort)
                     .font(.system(size: 20))
                 Spacer()
-                TextField("0", text: $viewMode.currency.amount)
+                TextField("Input Amount", text: $viewMode.currency.amount)
                     .keyboardType(.numberPad)
                     .font(.system(size: 20))
                     .padding(.leading, 10)
@@ -38,6 +38,6 @@ struct CurrencyHomeItemView: View {
 
 struct CurrencyHomeItemView_Previews: PreviewProvider {
     static var previews: some View {
-        CurrencyHomeItemView(viewMode: CurrencyHomeItemViewModel(currency: Currency(id: 0, rate: 0, amount: "", currencyShort: "", currencyTitle: ""), isSelected: false))
+        CurrencyHomeItemView(viewMode: CurrencyHomeItemViewModel(currency: Currency(id: 0, rate: 0, amount: "123", currencyShort: "USD", currencyTitle: "American USD"), isSelected: false))
     }
 }
