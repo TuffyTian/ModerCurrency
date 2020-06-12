@@ -21,6 +21,7 @@ struct CurrencyHomeItemView: View {
                     .font(.system(size: 20))
                 Spacer()
                 TextField("0", text: $viewMode.currency.amount)
+                    .keyboardType(.numberPad)
                     .font(.system(size: 20))
                     .padding(.leading, 10)
             }

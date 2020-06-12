@@ -34,6 +34,9 @@ struct CurrencyHomeView: View {
             .sheet(isPresented: $viewModel.presentView) {
                 CurrencySelectionView(viewModel: self.viewModel)
             }
+            .onTapGesture {
+                UIApplication.shared.endEditing()
+            }
             .gesture(DragGesture().onChanged({_ in
                 UIApplication.shared.endEditing()
             }))
@@ -50,6 +53,6 @@ struct CurrencyHomeView: View {
 
 struct CurrencyHomeView_Previews: PreviewProvider {
     static var previews: some View {
-        CurrencyHomeView(viewModel: CurrencyHomeViewModel())
+        CurrencyHomeView(viewModel: CurrencyHomeViewModel(service: CurrencyFetchService()))
     }
 }

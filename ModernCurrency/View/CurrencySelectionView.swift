@@ -64,6 +64,6 @@ struct CurrencySelectionView: View {
 
 struct CurrencySelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        CurrencySelectionView(viewModel: CurrencyHomeViewModel())
+        CurrencySelectionView(viewModel: CurrencyHomeViewModel(service: CurrencyFetchService()))
     }
 }

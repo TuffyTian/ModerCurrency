@@ -9,13 +9,7 @@
 import Foundation
 import Combine
 
-final class CurrencyFetchManager {
-    static let instance = CurrencyFetchManager()
-    
-    private init() {}
-}
-
-extension CurrencyFetchManager {
+class CurrencyFetchService {
     var currenyListUpdated: AnyPublisher<Bool, AppError> {
         let request = URLRequest(url: URL(string: Api.Currency.currencyList)!)
         
@@ -65,7 +59,7 @@ extension CurrencyFetchManager {
     }
 }
 
-extension CurrencyFetchManager {
+extension CurrencyFetchService {
     private func handleError(error: Error) -> AppError {
         switch error {
         case let urlError as URLError:

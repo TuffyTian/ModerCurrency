@@ -15,7 +15,7 @@ final class CurrencyHomeViewModel: ObservableObject {
     private var currencyShowingKeys: [String] = ["USD", "CNY", "JPY"]
     @Published var currencyShowing: [CurrencyHomeItemViewModel] = []
     @Published var currentChangedCurrency: CurrencyHomeItemViewModel?
-    private var reloadDataSubject: CurrentValueSubject<Bool, Never> = CurrentValueSubject(true)
+    private var reloadDataSubject = CurrentValueSubject<Bool, Never>(true)
     private var refetchDataSubject = PassthroughSubject<Void, Never>()
     
     /// This is datasource of the CurrencySelectionView. for conevenient, I just use a dict.
@@ -24,8 +24,10 @@ final class CurrencyHomeViewModel: ObservableObject {
     @Published var presentView = false
     
     private var cancelBag = Set<AnyCancellable>()
+    private let currencyFetchService: CurrencyFetchService
     
-    init() {
+    init(service: CurrencyFetchService) {
+        currencyFetchService = service
         prepareData()
         
         NotificationCenter
@@ -68,8 +70,6 @@ final class CurrencyHomeViewModel: ObservableObject {
                     } else {
                         item.currency.amount = toUSD == 0.0 ? "" : String(format: "%.2f", (item.currency.rate * toUSD))
                     }
-                    
-                    print(item.currency.amount + "\(item.currency.currencyShort)")
                 }
             }
         }
@@ -86,8 +86,8 @@ final class CurrencyHomeViewModel: ObservableObject {
         
         self.refetchDataSubject
             .flatMap {
-                return CurrencyFetchManager.instance.currenyListUpdated
-                    .combineLatest(CurrencyFetchManager.instance.liveRateUpdated)
+                return self.currencyFetchService.currenyListUpdated
+                    .combineLatest(self.currencyFetchService.liveRateUpdated)
                 .replaceError(with: (false, false))
                 .eraseToAnyPublisher()
             }
@@ -108,7 +108,6 @@ final class CurrencyHomeViewModel: ObservableObject {
                 return self.loadCurrencies()
             }
             .map({ (items) -> [CurrencyHomeItemViewModel] in
-                print(items.count)
                 return self.filterWithCurrenyShowingKeys(items: items)
             })
             .receive(on: DispatchQueue.main)
@@ -130,7 +129,6 @@ final class CurrencyHomeViewModel: ObservableObject {
                 })
             }
             .receive(on: DispatchQueue.main)
-            .replaceError(with: [:])
             .assign(to: \.currencyList, on: self)
             .store(in: &cancelBag)
         
