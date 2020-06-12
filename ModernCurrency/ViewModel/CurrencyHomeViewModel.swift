@@ -95,11 +95,7 @@ final class CurrencyHomeViewModel: ObservableObject {
                 .eraseToAnyPublisher()
             }
             .map { (result) -> Bool in
-                if result.0 == true && result.1 == true {
-                    return true
-                } else {
-                    return false
-                }
+                return result.0 == true && result.1 == true
             }
             .receive(on: DispatchQueue.main)
             .assign(to: \.reloadDataSubject.value, on: self)
@@ -121,10 +117,7 @@ final class CurrencyHomeViewModel: ObservableObject {
         self.reloadDataSubject
             .filter { $0 == true }
             .map { data -> Dictionary<String, String> in
-                if data == true {
-                    return UserDefaults.standard.dictionary(forKey: currencyStoreKey) as? Dictionary<String, String> ?? [:]
-                }
-                return [:]
+                return UserDefaults.standard.dictionary(forKey: currencyStoreKey) as? Dictionary<String, String> ?? [:]
             }
             .map { items in
                 return items.filter({ (item) -> Bool in
