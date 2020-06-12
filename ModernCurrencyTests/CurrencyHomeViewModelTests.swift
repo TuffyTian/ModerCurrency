@@ -11,9 +11,15 @@ import Combine
 @testable import ModernCurrency
 
 class CurrencyHomeViewModelTests: XCTestCase {
+    var mockService: MockCurrencyFetchService!
+    var viewModel: CurrencyHomeViewModel!
+    
+    override func setUp() {
+        mockService = MockCurrencyFetchService()
+        viewModel = CurrencyHomeViewModel(dataSource: mockService)
+    }
+    
     func test_canLoadDataWhenFetchFailed() {
-        let mockService = MockCurrencyFetchService()
-        let viewModel = CurrencyHomeViewModel(dataSource: mockService)
         let exp = expectation(description: "expected values")
         let cancelable = viewModel.$currencyList
             .sink { (items) in
@@ -31,8 +37,6 @@ class CurrencyHomeViewModelTests: XCTestCase {
     }
     
     func test_canLoadDataWhenFetchSuccess() {
-        let mockService = MockCurrencyFetchService()
-        let viewModel = CurrencyHomeViewModel(dataSource: mockService)
         let exp = expectation(description: "expected values")
         let cancelable = viewModel.$currencyList
             .sink { (items) in
@@ -50,8 +54,6 @@ class CurrencyHomeViewModelTests: XCTestCase {
     }
     
     func test_addNewCurrencyShowing() {
-        let mockService = MockCurrencyFetchService()
-        let viewModel = CurrencyHomeViewModel(dataSource: mockService)
         let expectCount = 4
         let exp = expectation(description: "expected values")
         let cancelable = viewModel.$currencyShowing
@@ -68,8 +70,6 @@ class CurrencyHomeViewModelTests: XCTestCase {
     }
     
     func test_deleteCurrencyShowing() {
-        let mockService = MockCurrencyFetchService()
-        let viewModel = CurrencyHomeViewModel(dataSource: mockService)
         let expectCount = 2
         let exp = expectation(description: "expected values")
         let cancelable = viewModel.$currencyShowing
@@ -83,6 +83,22 @@ class CurrencyHomeViewModelTests: XCTestCase {
         
         wait(for: [exp], timeout: 1)
         XCTAssert(viewModel.currencyShowing.count == 2)
+    }
+    
+    func test_searchCurrency() {
+        let expectCurrency = "AMD"
+        let exp = expectation(description: "expected values")
+        let cancelable = viewModel.$currencyList
+            .sink { (items) in
+                if items.first?.key == expectCurrency {
+                    exp.fulfill()
+                }
+        }
+        
+        viewModel.searchText = "AMD"
+        
+        wait(for: [exp], timeout: 1)
+        XCTAssert(viewModel.currencyList.count != 0)
     }
     
 }
