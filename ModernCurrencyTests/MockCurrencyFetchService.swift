@@ -10,14 +10,14 @@ import XCTest
 import Combine
 @testable import ModernCurrency
 
-class MockCurrencyFetchService: CurrencyFetchService {
+class MockCurrencyFetchService: CurrencyFetchDataSource {
     let currencyListSubject = CurrentValueSubject<Bool, AppError>(false);
     let liveRateSubject = CurrentValueSubject<Bool, AppError>(false)
-    override var currenyListUpdated: AnyPublisher<Bool, AppError> {
+    var currenyListUpdated: AnyPublisher<Bool, AppError> {
         return currencyListSubject.eraseToAnyPublisher()
     }
     
-    override var liveRateUpdated: AnyPublisher<Bool, AppError> {
+    var liveRateUpdated: AnyPublisher<Bool, AppError> {
         return liveRateSubject.eraseToAnyPublisher()
     }
 }

@@ -12,8 +12,8 @@ import Combine
 
 class CurrencyHomeViewModelTests: XCTestCase {
     func test_canLoadDataWhenFetchFailed() {
-        let mockManager = MockCurrencyFetchService()
-        let viewModel = CurrencyHomeViewModel(manager: mockManager)
+        let mockService = MockCurrencyFetchService()
+        let viewModel = CurrencyHomeViewModel(dataSource: mockService)
         let exp = expectation(description: "expected values")
         let cancelable = viewModel.$currencyList
             .sink { (items) in
@@ -22,8 +22,8 @@ class CurrencyHomeViewModelTests: XCTestCase {
                 }
         }
         
-        mockManager.currencyListSubject.send(false)
-        mockManager.currencyListSubject.send(false)
+        mockService.currencyListSubject.send(false)
+        mockService.currencyListSubject.send(false)
         
         wait(for: [exp], timeout: 1)
         XCTAssert(viewModel.currencyList.count != 0)
@@ -31,8 +31,8 @@ class CurrencyHomeViewModelTests: XCTestCase {
     }
     
     func test_canLoadDataWhenFetchSuccess() {
-        let mockManager = MockCurrencyFetchService()
-        let viewModel = CurrencyHomeViewModel(manager: mockManager)
+        let mockService = MockCurrencyFetchService()
+        let viewModel = CurrencyHomeViewModel(dataSource: mockService)
         let exp = expectation(description: "expected values")
         let cancelable = viewModel.$currencyList
             .sink { (items) in
@@ -41,8 +41,8 @@ class CurrencyHomeViewModelTests: XCTestCase {
                 }
         }
         
-        mockManager.currencyListSubject.send(true)
-        mockManager.currencyListSubject.send(true)
+        mockService.currencyListSubject.send(true)
+        mockService.currencyListSubject.send(true)
         
         wait(for: [exp], timeout: 1)
         XCTAssert(viewModel.currencyList.count != 0)
@@ -50,8 +50,8 @@ class CurrencyHomeViewModelTests: XCTestCase {
     }
     
     func test_addNewCurrencyShowing() {
-        let mockManager = MockCurrencyFetchService()
-        let viewModel = CurrencyHomeViewModel(manager: mockManager)
+        let mockService = MockCurrencyFetchService()
+        let viewModel = CurrencyHomeViewModel(dataSource: mockService)
         let expectCount = 4
         let exp = expectation(description: "expected values")
         let cancelable = viewModel.$currencyShowing
@@ -68,8 +68,8 @@ class CurrencyHomeViewModelTests: XCTestCase {
     }
     
     func test_deleteCurrencyShowing() {
-        let mockManager = MockCurrencyFetchService()
-        let viewModel = CurrencyHomeViewModel(manager: mockManager)
+        let mockService = MockCurrencyFetchService()
+        let viewModel = CurrencyHomeViewModel(dataSource: mockService)
         let expectCount = 2
         let exp = expectation(description: "expected values")
         let cancelable = viewModel.$currencyShowing

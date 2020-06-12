@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        CurrencyHomeView(viewModel: CurrencyHomeViewModel(service: CurrencyFetchService()))
+        CurrencyHomeView(viewModel: CurrencyHomeViewModel(dataSource: CurrencyFetchService()))
     }
 }
 

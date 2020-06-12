@@ -9,7 +9,12 @@
 import Foundation
 import Combine
 
-class CurrencyFetchService {
+protocol CurrencyFetchDataSource {
+    var currenyListUpdated: AnyPublisher<Bool, AppError> { get }
+    var liveRateUpdated: AnyPublisher<Bool, AppError> { get }
+}
+
+class CurrencyFetchService: CurrencyFetchDataSource {
     var currenyListUpdated: AnyPublisher<Bool, AppError> {
         let request = URLRequest(url: URL(string: Api.Currency.currencyList)!)
         
@@ -25,8 +30,7 @@ class CurrencyFetchService {
                 // For convenient I use UserDefaults, Actually it is not a good way to store network data.
                 // Data of curreny is not big. So just chose UserDefaults.
                 let jsonDic = json as? Dictionary<String, Any> ?? [:]
-                print("run")
-                UserDefaults.standard.set(jsonDic["currencies"] ?? [], forKey: "currency")
+                UserDefaults.standard.set(jsonDic["currencies"] ?? [], forKey: currencyStoreKey)
                 return true
             }
             .mapError({ (error) -> AppError in
@@ -49,7 +53,7 @@ class CurrencyFetchService {
                 // For convenient I use UserDefaults, Actually it is not a good way to store network data.
                 // Data of curreny is not big. So just chose UserDefaults.
                 let jsonDic = json as? Dictionary<String, Any> ?? [:]
-                UserDefaults.standard.set(jsonDic["quotes"] ?? [], forKey: "rates")
+                UserDefaults.standard.set(jsonDic["quotes"] ?? [], forKey: liveRateStoreKey)
                 return true
             }
             .mapError({ (error) -> AppError in

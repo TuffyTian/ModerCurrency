@@ -34,3 +34,6 @@ extension UIApplication {
 }
 
 let amountChangeNotificationName = "AmountChange"
+
+let liveRateStoreKey = "liveRateKey"
+let currencyStoreKey = "currencyKey"

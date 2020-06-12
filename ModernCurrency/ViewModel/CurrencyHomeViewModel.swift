@@ -15,6 +15,7 @@ final class CurrencyHomeViewModel: ObservableObject {
     private var currencyShowingKeys: [String] = ["USD", "CNY", "JPY"]
     @Published var currencyShowing: [CurrencyHomeItemViewModel] = []
     @Published var currentChangedCurrency: CurrencyHomeItemViewModel?
+    
     private var reloadDataSubject = CurrentValueSubject<Bool, Never>(true)
     private var refetchDataSubject = PassthroughSubject<Void, Never>()
     
@@ -24,10 +25,10 @@ final class CurrencyHomeViewModel: ObservableObject {
     @Published var presentView = false
     
     private var cancelBag = Set<AnyCancellable>()
-    private let currencyFetchService: CurrencyFetchService
+    private let currencyFetchDataSource: CurrencyFetchDataSource
     
-    init(service: CurrencyFetchService) {
-        currencyFetchService = service
+    init(dataSource: CurrencyFetchDataSource) {
+        currencyFetchDataSource = dataSource
         prepareData()
         
         NotificationCenter
@@ -42,18 +43,19 @@ final class CurrencyHomeViewModel: ObservableObject {
         }
     }
     
+    // add new currency to home page
     func addNewCurrencyShowing(key: String) {
         self.currencyShowingKeys.append(key)
-        
         reloadDataSubject.send(true)
     }
     
+    // remove currency from home page
     func removeCurrencyShowing(at index: Int) {
         self.currencyShowingKeys.remove(at: index)
-        
         reloadDataSubject.send(true)
     }
     
+    // change amount. will change amounts of all of the currenies at home page
     @objc func changeAmount(_ notification: Notification) {
         DispatchQueue.main.async{ [unowned self] in
             for item in self.currencyShowing {
@@ -75,6 +77,7 @@ final class CurrencyHomeViewModel: ObservableObject {
         }
     }
     
+    // add subscribers
     private func prepareData() {
         self.$currentChangedCurrency
             .sink { (viewModel) in
@@ -86,8 +89,8 @@ final class CurrencyHomeViewModel: ObservableObject {
         
         self.refetchDataSubject
             .flatMap {
-                return self.currencyFetchService.currenyListUpdated
-                    .combineLatest(self.currencyFetchService.liveRateUpdated)
+                return self.currencyFetchDataSource.currenyListUpdated
+                    .combineLatest(self.currencyFetchDataSource.liveRateUpdated)
                 .replaceError(with: (false, false))
                 .eraseToAnyPublisher()
             }
@@ -119,7 +122,7 @@ final class CurrencyHomeViewModel: ObservableObject {
             .filter { $0 == true }
             .map { data -> Dictionary<String, String> in
                 if data == true {
-                    return UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
+                    return UserDefaults.standard.dictionary(forKey: currencyStoreKey) as? Dictionary<String, String> ?? [:]
                 }
                 return [:]
             }
@@ -143,12 +146,14 @@ final class CurrencyHomeViewModel: ObservableObject {
 }
 
 extension CurrencyHomeViewModel {
+    // load data from local
     private func loadCurrencies() -> [CurrencyHomeItemViewModel] {
         var currencyItemsShowing: [CurrencyHomeItemViewModel] = []
         
-        let rates = UserDefaults.standard.dictionary(forKey: "rates") ?? [:]
-        let currencies = UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
+        let rates = UserDefaults.standard.dictionary(forKey: liveRateStoreKey) ?? [:]
+        let currencies = UserDefaults.standard.dictionary(forKey: currencyStoreKey) as? Dictionary<String, String> ?? [:]
         if rates.count == 0 || currencies.count == 0 {
+            self.refetchDataSubject.send()
             return []
         }
         
@@ -191,7 +196,7 @@ extension CurrencyHomeViewModel {
     }
     
     private func filterWithSearchText(_ text: String) -> Dictionary<String, String> {
-        var listDic = UserDefaults.standard.dictionary(forKey: "currency") as? Dictionary<String, String> ?? [:]
+        var listDic = UserDefaults.standard.dictionary(forKey: currencyStoreKey) as? Dictionary<String, String> ?? [:]
         
         listDic = listDic.filter({ (item) -> Bool in
             return !currencyShowingKeys.contains(item.key)
