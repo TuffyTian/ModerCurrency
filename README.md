@@ -1,5 +1,5 @@
 # ModerCurrency
-This is a Currency Convertor written by Swift and Combine
+This is a Currency Convertor written by SwiftUI and Combine
 
 
 
